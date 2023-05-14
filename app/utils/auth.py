@@ -41,16 +41,13 @@ def verify_hashed_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 def authenticate_credentials(login_credentials: LoginCredentials) -> AlumniInDB:
-    if is_email(login_credentials.username):
-        alumni = db.get_alumni_from_email(login_credentials.username)
-    else:
-        alumni = db.get_alumni_from_studentid(login_credentials.username)
+    alumni = db.get_alumni_from_email(login_credentials.username)
     if not alumni:
         return False
     is_password_verified = verify_hashed_password(login_credentials.password, alumni.hashed_password)
     if not is_password_verified:
         return False
-    
+
     return alumni
 
 def create_access_token(data: dict, expires_delta: timedelta):
@@ -70,13 +67,13 @@ def get_current_user(token: Annotated[str, Depends(auth_scheme)]):
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ENCRYPTION_ALGORITHM])
         print(payload)
-        student_id: str = payload.get("student_id")
-        if student_id is None:
+        email: str = payload.get("email")
+        if email is None:
             raise credentials_exception
-        token_data = TokenData(student_id=student_id)
+        token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    alumni = db.get_alumni_from_studentid(token_data.student_id)
+    alumni = db.get_alumni_from_email(token_data.email)
     if alumni is None:
         raise credentials_exception
     return alumni

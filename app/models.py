@@ -7,7 +7,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    student_id: str | None = None
+    email: EmailStr | None = None
 
 class Alumni(BaseModel):
     email: EmailStr
@@ -24,3 +24,7 @@ class AlumniInDB(Alumni):
 class LoginCredentials(BaseModel):
     username: EmailStr | str = Field(regex="^s3\d{6}$")
     password: str
+
+class Certificate(BaseModel):
+    certificate_number: int
+    alumni_email: Alumni

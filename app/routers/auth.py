@@ -21,7 +21,7 @@ def login(login_credentials: Annotated[AuthCredentialDependency, Depends()]):
         )
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"student_id": alumni.student_id}, expires_delta=access_token_expires
+        data={"email": alumni.email}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

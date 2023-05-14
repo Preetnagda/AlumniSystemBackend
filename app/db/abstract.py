@@ -9,8 +9,3 @@ class Db(ABC):
     @abstractmethod
     def get_alumni_from_email(self) -> AlumniInDB:
         pass
-
-    @abstractmethod
-    def get_alumni_from_studentid(self) -> AlumniInDB:
-        pass
-        
