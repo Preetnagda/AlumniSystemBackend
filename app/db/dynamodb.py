@@ -1,4 +1,4 @@
-from app.models import AlumniInDB, Alumni
+from app.models import UserInDB, User
 from .abstract import Db as AbstractDb
 import boto3
 from botocore.exceptions import ClientError
@@ -6,30 +6,30 @@ from boto3.dynamodb.conditions import Key
 
 class Db(AbstractDb):
 
-    ALUMNI_TABLE_NAME = 'alumni'
-    CERTIFICATE_TABLE_NAME = 'certificate'
+    USER_TABLE_NAME = 'user'
+    DOCUMENT_TABLE_NAME = 'document'
 
     def __init__(self):
         self.engine = boto3.resource('dynamodb')
-        self.alumni_table = self.engine.Table(self.ALUMNI_TABLE_NAME)
-        self.certificate_table = self.engine.Table(self.CERTIFICATE_TABLE_NAME)
+        self.user_table = self.engine.Table(self.USER_TABLE_NAME)
+        self.certificate_table = self.engine.Table(self.DOCUMENT_TABLE_NAME)
 
-    def register_alumni(self, alumni: AlumniInDB) -> Alumni:
-        if self.get_alumni_from_email(alumni.email) is not None:
+    def register_user(self, user: UserInDB) -> User:
+        if self.get_user_from_email(user.email) is not None:
             return False
         try:
-            self.alumni_table.put_item(
-                Item=alumni.dict()
+            self.user_table.put_item(
+                Item=user.dict()
             )
         except ClientError as err:
             print(err)
             return False
         
-        return Alumni.parse_obj(alumni)
+        return user.parse_obj(user)
 
-    def get_alumni_from_email(self, email) -> AlumniInDB:
-        get_item_response = self.alumni_table.get_item(Key={'email':email})
+    def get_user_from_email(self, email) -> UserInDB:
+        get_item_response = self.user_table.get_item(Key={'email':email})
         if "Item" not in get_item_response:
             return None
-        alumni = get_item_response["Item"]
-        return AlumniInDB.parse_obj(alumni)
+        user = get_item_response["Item"]
+        return UserInDB.parse_obj(user)

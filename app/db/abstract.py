@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from app.models import AlumniIn, AlumniInDB
+from app.models import UserIn, UserInDB
 class Db(ABC):    
 
     @abstractmethod
-    def register_alumni(self, alumni: AlumniIn):
+    def register_user(self, user: UserIn):
         pass
 
     @abstractmethod
-    def get_alumni_from_email(self) -> AlumniInDB:
+    def get_user_from_email(self) -> UserInDB:
         pass

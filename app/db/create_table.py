@@ -1,11 +1,11 @@
 import boto3
 from botocore.exceptions import ClientError
 
-def create_alumni_table():
+def create_user_table():
     try:
         engine = boto3.resource('dynamodb')
-        alumni_table = engine.create_table(
-            TableName="alumni",
+        user_table = engine.create_table(
+            TableName="user",
             KeySchema=[
                 {'AttributeName': 'email', 'KeyType': 'HASH'},  # Partition key
             ],
@@ -13,38 +13,38 @@ def create_alumni_table():
                 {'AttributeName': 'email', 'AttributeType': 'S'},
             ],
             ProvisionedThroughput={'ReadCapacityUnits': 1, 'WriteCapacityUnits': 1})
-        alumni_table.wait_until_exists()
+        user_table.wait_until_exists()
     except ClientError as err:
         print(
             "Couldn't create table. %s: %s",
             err.response['Error']['Code'], err.response['Error']['Message'])
         raise
     else:
-        return alumni_table
+        return user_table
 
-def create_certificate_table():
+def create_document_table():
     try:
         engine = boto3.resource('dynamodb')
-        alumni_table = engine.create_table(
-            TableName="certificate",
+        document_table = engine.create_table(
+            TableName="document",
             KeySchema=[
-                {'AttributeName': 'certificate_no', 'KeyType': 'HASH'},  # Partition key
-                {'AttributeName': 'alumni_email', 'KeyType': 'RANGE'}  # Sort key
+                {'AttributeName': 'document_no', 'KeyType': 'HASH'},  # Partition key
+                {'AttributeName': 'user_email', 'KeyType': 'RANGE'}  # Sort key
             ],
             AttributeDefinitions=[
-                {'AttributeName': 'alumni_email', 'AttributeType': 'S'},
-                {'AttributeName': 'certificate_no', 'AttributeType': 'S'}
+                {'AttributeName': 'user_email', 'AttributeType': 'S'},
+                {'AttributeName': 'document_no', 'AttributeType': 'S'}
             ],
             ProvisionedThroughput={'ReadCapacityUnits': 1, 'WriteCapacityUnits': 1})
-        alumni_table.wait_until_exists()
+        document_table.wait_until_exists()
     except ClientError as err:
         print(
             "Couldn't create table. %s: %s",
             err.response['Error']['Code'], err.response['Error']['Message'])
         raise
     else:
-        return alumni_table
+        return document_table
     
 if __name__ == '__main__':
-    create_certificate_table()
-    create_alumni_table()
+    create_document_table()
+    create_user_table()

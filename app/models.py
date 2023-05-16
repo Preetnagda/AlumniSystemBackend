@@ -1,5 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field
-from fastapi import Form
+from enum import Enum
+
+class UserRole(str, Enum):
+    alumni = "alumni"
+    admin = "admin"
 
 class Token(BaseModel):
     access_token: str
@@ -9,22 +13,25 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: EmailStr | None = None
 
-class Alumni(BaseModel):
+class User(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
     student_id: str = Field(regex="^s3\d{6}$")
 
-class AlumniIn(Alumni):
+class UserIn(User):
     password: str
 
-class AlumniInDB(Alumni):
+class UserInDB(User):
+    role: UserRole
     hashed_password: str
-
+    class Config:
+        use_enum_values=True
+        
 class LoginCredentials(BaseModel):
-    username: EmailStr | str = Field(regex="^s3\d{6}$")
+    username: EmailStr
     password: str
 
 class Certificate(BaseModel):
     certificate_number: int
-    alumni_email: Alumni
+    user_email: User

@@ -4,10 +4,11 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from app import config, db
-from app.models import LoginCredentials, AlumniInDB, TokenData
+from app.models import LoginCredentials, UserInDB, TokenData
 from pydantic import EmailStr
 from datetime import timedelta, datetime
 from fastapi.param_functions import Form, Body
+from app.utils.exceptions import TokenException
 
 auth_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -40,15 +41,15 @@ def encode_password(password: str):
 def verify_hashed_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
-def authenticate_credentials(login_credentials: LoginCredentials) -> AlumniInDB:
-    alumni = db.get_alumni_from_email(login_credentials.username)
-    if not alumni:
+def authenticate_credentials(login_credentials: LoginCredentials) -> UserInDB:
+    user = db.get_user_from_email(login_credentials.username)
+    if not user:
         return False
-    is_password_verified = verify_hashed_password(login_credentials.password, alumni.hashed_password)
+    is_password_verified = verify_hashed_password(login_credentials.password, user.hashed_password)
     if not is_password_verified:
         return False
 
-    return alumni
+    return user
 
 def create_access_token(data: dict, expires_delta: timedelta):
     to_encode = data.copy()
@@ -57,23 +58,16 @@ def create_access_token(data: dict, expires_delta: timedelta):
     encoded_jwt = jwt.encode(to_encode, config.SECRET_KEY, algorithm=config.ENCRYPTION_ALGORITHM)
     return encoded_jwt
 
-def get_current_user(token: Annotated[str, Depends(auth_scheme)]):
-    
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def get_current_user(token: Annotated[str, Depends(auth_scheme)]) -> UserInDB:
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ENCRYPTION_ALGORITHM])
-        print(payload)
         email: str = payload.get("email")
         if email is None:
-            raise credentials_exception
+            raise TokenException
         token_data = TokenData(email=email)
     except JWTError:
-        raise credentials_exception
-    alumni = db.get_alumni_from_email(token_data.email)
-    if alumni is None:
-        raise credentials_exception
-    return alumni
+        raise TokenException
+    user = db.get_user_from_email(token_data.email)
+    if user is None:
+        raise TokenException
+    return user
