@@ -50,7 +50,7 @@ class Db(AbstractDb):
     def get_user_documents(self, user:User):
         try:
             response = self.document_table.query(
-                IndexName='user_email-index',
+                IndexName='user_emal-index',
                 KeyConditionExpression=Key('user_email').eq(user.email)
             )
             return response["Items"]
