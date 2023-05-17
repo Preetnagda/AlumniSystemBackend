@@ -1,4 +1,4 @@
-from app.models import UserInDB, User
+from app.models import UserInDB, User, Document
 from .abstract import Db as AbstractDb
 import boto3
 from botocore.exceptions import ClientError
@@ -35,7 +35,6 @@ class Db(AbstractDb):
         return UserInDB.parse_obj(user)
     
     def add_document(self, document_no, user: User, type):
-
         try:
             self.document_table.put_item(
                 Item={
@@ -57,4 +56,14 @@ class Db(AbstractDb):
             return response["Items"]
         except ClientError as err:
             print(err)
-            return False    
+            return False
+        
+    def get_document(self, document_no: str) -> Document:
+        try:
+            response = self.document_table.get_item(
+                Key={'document_no':document_no}
+            )
+            return Document.parse_obj(response["Item"])
+        except ClientError as err:
+            print(err)
+            return False

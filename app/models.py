@@ -27,7 +27,7 @@ class UserInDB(User):
     hashed_password: str
     class Config:
         use_enum_values=True
-        
+
 class LoginCredentials(BaseModel):
     username: EmailStr
     password: str
@@ -35,3 +35,8 @@ class LoginCredentials(BaseModel):
 class Certificate(BaseModel):
     certificate_number: int
     user_email: User
+
+class Document(BaseModel):
+    document_no: str
+    type: str
+    user_email: EmailStr
