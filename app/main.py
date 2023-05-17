@@ -1,16 +1,8 @@
 from app import app
-from typing import Annotated
-from fastapi import Depends
 from app.routers.auth import router as auth_router
-from .utils.auth import get_current_user
-from .models import UserInDB
+from app.routers.alumni import router as alumni_router
+from app.routers.external import router as external_router
 
 app.include_router(auth_router)
-
-@app.get("/")
-def root():
-    return {"message": "Hello World"}
-
-@app.get("/items/")
-async def read_items(current_user: Annotated[UserInDB, Depends(get_current_user)]):
-    return {"current_user": current_user}
+app.include_router(alumni_router)
+app.include_router(external_router)

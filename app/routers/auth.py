@@ -6,6 +6,7 @@ from app.utils.auth import encode_password, authenticate_credentials, \
     create_access_token, AuthCredentialDependency, get_current_user
 from datetime import timedelta
 from app.utils.exceptions import CredentialException, TokenException
+from app.utils.document import add_documents_for_user
 
 router = APIRouter(
     tags=["auth"],
@@ -28,6 +29,7 @@ def register(user: UserIn):
    user_dict["hashed_password"] = encode_password(user.password)
    user_dict["role"] = UserRole.alumni
    user_in_db = UserInDB.parse_obj(user_dict)
+   add_documents_for_user(user=user)
    return db.register_user(user_in_db)
 
 @router.post("/register-admin")

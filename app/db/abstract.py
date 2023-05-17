@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from app.models import UserIn, UserInDB
+from app.models import UserIn, UserInDB, User
 class Db(ABC):    
 
     @abstractmethod
@@ -8,4 +8,8 @@ class Db(ABC):
 
     @abstractmethod
     def get_user_from_email(self) -> UserInDB:
+        pass
+
+    @abstractmethod
+    def add_document(self, document_id, user: User):
         pass

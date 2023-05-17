@@ -8,7 +8,6 @@ load_dotenv()
 
 config = Config()
 app = FastAPI()
-
 origins = ['*']
 
 app.add_middleware(
