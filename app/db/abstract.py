@@ -13,3 +13,11 @@ class Db(ABC):
     @abstractmethod
     def add_document(self, document_id, user: User):
         pass
+
+    @abstractmethod
+    def get_user_documents(self, user: User):
+        pass
+
+    @abstractmethod
+    def get_document(self, document_id):
+        pass
