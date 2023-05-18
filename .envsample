@@ -1,0 +1,5 @@
+SECRET_KEY=<secret_key_for_jwt_tokens>
+ENCRYPTION_ALGORITHM=<encryption_alogrithm_to_hash_user_password>
+ACCESS_TOKEN_EXPIRE_MINUTES=
+AUTO_UPLOAD_FILE=<set_this_variable_to_auto_generate_dummy_documents_for_alumni>
+S3_BUCKET_NAME=
