@@ -6,3 +6,7 @@ from app.routers.external import router as external_router
 app.include_router(auth_router)
 app.include_router(alumni_router)
 app.include_router(external_router)
+
+@app.get("/")
+def health_check():
+    return {"health": "OK"}
